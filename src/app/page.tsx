@@ -76,7 +76,7 @@ const page = () => {
       </div>
 
       {/* Features */}
-      <div className="mt-32 px-4">
+      <div className="mt-32 px-12">
         <div className=" space-y-2 text-center">
           <h1 className="text-5xl font-bold">Start chating in minutes</h1>
           <p className="text-lg">

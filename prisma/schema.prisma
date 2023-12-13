@@ -8,8 +8,34 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 model User {
-  id String @id @unique
+  id    String @id @unique
   email String @unique
+
+  file File[]
+}
+
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+model File {
+  id   String @id @default(uuid())
+  name String
+
+  uploadStatus UploadStatus @default(PENDING)
+
+  url String
+  key String
+
+  User   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }

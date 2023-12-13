@@ -85,7 +85,7 @@ const page = () => {
         </div>
 
         {/* Steps */}
-        <div className="flex justify-center my-12">
+        <div className="flex justify-center my-12 ">
           <div>
             <ol className="flex flex-col md:flex-row space-x-0 md:space-x-24 space-y-4 md:space-y-0">
               {/* step 1 */}

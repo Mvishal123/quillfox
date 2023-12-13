@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { TRPCProvider } from "@/components/trpcProvider";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
@@ -18,15 +19,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="light">
-      <body
-        className={cn(
-          "min-h-screen antialiased grainy font-sans",
-          inter.className
-        )}
-      >
-        <Navbar />
-        {children}
-      </body>
+      <TRPCProvider>
+        <body
+          className={cn(
+            "min-h-screen antialiased grainy font-sans",
+            inter.className
+          )}
+        >
+          <Navbar />
+          {children}
+        </body>
+      </TRPCProvider>
     </html>
   );
 }

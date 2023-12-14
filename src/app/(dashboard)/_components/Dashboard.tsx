@@ -1,6 +1,8 @@
 "use client";
 
 import { trpc } from "@/app/_trpc/trpc-client";
+import { format } from "date-fns";
+
 import UploadButton from "./UploadButton";
 import {
   Ghost,
@@ -9,11 +11,13 @@ import {
   MessagesSquareIcon,
   Trash,
 } from "lucide-react";
-import Skeleton from "react-loading-skeleton";
 import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
-  const { data: files, isLoading } = trpc.getUserFiles.useQuery();
+  const { data: files, isLoading: isFilesLoading } =
+    trpc.getUserFiles.useQuery();
+  const { mutate: deleteFile, isLoading: isDeleteLoading } =
+    trpc.deleteFile.useMutation();
 
   return (
     <div className="max-w-7xl mx-auto p-12">
@@ -31,21 +35,37 @@ const Dashboard = () => {
                 <div key={i}>
                   <ul className="grid md:grid-cols-2 lg:grid-cols-3">
                     <li className="bg-white rounded-md divide-y divide-slate-200">
-                      <div className="flex gap-4 items-center px-8 py-4">
+                      <div className="flex gap-4 items-center px-8 py-4 truncate">
                         <div className="bg-gradient-to-r from-rose-400 to-red-500 h-12 w-12 rounded-full" />
-                        <h1 className="text-xl font-semibold">{file.name}</h1>
+                        <h1 className="text-xl font-semibold truncate">
+                          {file.name}
+                        </h1>
                       </div>
                       <div className="flex justify-between px-6 py-2 items-center">
-                        <div className="text-sm">{file.createdAt}</div>
-                        <div>
+                        <div className="text-sm">
+                          {format(new Date(file.createdAt), "MMM yyyy")}
+                        </div>
+                        <div className="truncate flex gap-1 items-center">
                           <MessageSquare strokeWidth={1} className="h-5 w-5" />
+                          <p className="text-sm truncate">test</p>
                         </div>
                         <div>
-                          <Button className="bg-red-600/10 hover:bg-red-600/10 hover:ring-1 hover:ring-red-300">
-                            <Trash
-                              className="h-5 w-5 text-red-600"
-                              strokeWidth={1}
-                            />
+                          <Button
+                            className="bg-red-600/10 hover:bg-red-600/10 hover:ring-1 hover:ring-red-300"
+                            size={"sm"}
+                            onClick={() => deleteFile({ id: file.id })}
+                          >
+                            {!isDeleteLoading ? (
+                              <Trash
+                                className="h-5 w-5 text-red-600"
+                                strokeWidth={1}
+                              />
+                            ) : (
+                              <Loader2
+                                className="h-5 w-5 text-red-600 animate-spin"
+                                strokeWidth={1}
+                              />
+                            )}
                           </Button>
                         </div>
                       </div>
@@ -55,7 +75,7 @@ const Dashboard = () => {
               );
             })}
           </div>
-        ) : isLoading ? (
+        ) : isFilesLoading ? (
           <div className="flex w-full justify-center mt-36">
             <Loader2 className="h-12 w-12 animate-spin" strokeWidth={1} />
           </div>

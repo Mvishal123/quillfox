@@ -40,8 +40,36 @@ export const appRouter = router({
       where: {
         userId,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
   }),
+
+  deleteFile: authProcedure.input(
+      z.object({
+        id: z.string(),
+      })
+    ).mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const courseId = input.id;
+
+      const file = await db.file.delete({
+        where: {
+          id: courseId,
+          userId,
+        },
+      });
+
+      if (!file) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return {
+        success: true,
+        message: "File deleted",
+      };
+    }),
 });
 
 export type AppRouter = typeof appRouter;

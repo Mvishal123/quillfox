@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, router } from "./trpc";
+import { authProcedure, publicProcedure, router } from "./trpc";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { db } from "@/db";
 import { TRPCError } from "@trpc/server";
@@ -32,6 +32,15 @@ export const appRouter = router({
       success: true,
       message: "Authorized",
     };
+  }),
+
+  getUserFiles: authProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx;
+    return await db.file.findMany({
+      where: {
+        userId,
+      },
+    });
   }),
 });
 

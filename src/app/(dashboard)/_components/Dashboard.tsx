@@ -9,15 +9,21 @@ import {
   Loader2,
   MessageSquare,
   MessagesSquareIcon,
+  PlusIcon,
   Trash,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
+  const utils = trpc.useUtils();
+  //once the file is deleted the this helps us to call the getUserFiles query again
+
   const { data: files, isLoading: isFilesLoading } =
     trpc.getUserFiles.useQuery();
   const { mutate: deleteFile, isLoading: isDeleteLoading } =
-    trpc.deleteFile.useMutation();
+    trpc.deleteFile.useMutation({
+      onSuccess: () => utils.getUserFiles.invalidate(), // to refetch the query ( cache )
+    });
 
   return (
     <div className="max-w-7xl mx-auto p-12">
@@ -41,23 +47,26 @@ const Dashboard = () => {
                           {file.name}
                         </h1>
                       </div>
-                      <div className="flex justify-between px-6 py-2 items-center">
-                        <div className="text-sm">
-                          {format(new Date(file.createdAt), "MMM yyyy")}
+                      <div className="flex gap-3 px-6 py-2 items-center justify-between text-muted-foreground">
+                        <div className="text-xs flex items-center">
+                          <PlusIcon className="h-5 w-5" strokeWidth={1} />
+                          <span>
+                            {format(new Date(file.createdAt), "MMM yyyy")}
+                          </span>
                         </div>
                         <div className="truncate flex gap-1 items-center">
                           <MessageSquare strokeWidth={1} className="h-5 w-5" />
-                          <p className="text-sm truncate">test</p>
+                          <p className="text-xs truncate">test</p>
                         </div>
                         <div>
                           <Button
-                            className="bg-red-600/10 hover:bg-red-600/10 hover:ring-1 hover:ring-red-300"
+                            className="bg-red-600/10 hover:bg-red-600/10 hover:ring-1 hover:ring-red-300 w-full"
                             size={"sm"}
                             onClick={() => deleteFile({ id: file.id })}
                           >
                             {!isDeleteLoading ? (
                               <Trash
-                                className="h-5 w-5 text-red-600"
+                                className="h-4 w-4 text-red-600"
                                 strokeWidth={1}
                               />
                             ) : (

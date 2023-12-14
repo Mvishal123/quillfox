@@ -13,17 +13,22 @@ import {
   Trash,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const Dashboard = () => {
-  const utils = trpc.useUtils();
+  // to show the loader only on the file being deleted
+  const [deletingFile, setDeletingFile] = useState<string | null>(null);
+
   //once the file is deleted the this helps us to call the getUserFiles query again
+  const utils = trpc.useUtils();
 
   const { data: files, isLoading: isFilesLoading } =
     trpc.getUserFiles.useQuery();
-  const { mutate: deleteFile, isLoading: isDeleteLoading } =
-    trpc.deleteFile.useMutation({
-      onSuccess: () => utils.getUserFiles.invalidate(), // to refetch the query ( cache )
-    });
+  const { mutate: deleteFile } = trpc.deleteFile.useMutation({
+    onSuccess: () => utils.getUserFiles.invalidate(), // to refetch the query ( cache )
+    onMutate: ({ id }) => setDeletingFile(id),
+    onSettled: () => setDeletingFile(null),
+  });
 
   return (
     <div className="max-w-7xl mx-auto p-12">
@@ -35,52 +40,50 @@ const Dashboard = () => {
       </div>
       <div className="w-full">
         {files && files.length !== 0 ? (
-          <div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 space-x-12">
             {files.map((file, i) => {
               return (
-                <div key={i}>
-                  <ul className="grid md:grid-cols-2 lg:grid-cols-3">
-                    <li className="bg-white rounded-md divide-y divide-slate-200">
-                      <div className="flex gap-4 items-center px-8 py-4 truncate">
-                        <div className="bg-gradient-to-r from-rose-400 to-red-500 h-12 w-12 rounded-full" />
-                        <h1 className="text-xl font-semibold truncate">
-                          {file.name}
-                        </h1>
+                <ul key={i}>
+                  <li className="bg-white rounded-md divide-y divide-slate-200">
+                    <div className="flex gap-4 items-center px-8 py-4 truncate">
+                      <div className="bg-gradient-to-r from-rose-400 to-red-500 h-12 w-12 rounded-full" />
+                      <h1 className="text-xl font-semibold truncate">
+                        {file.name}
+                      </h1>
+                    </div>
+                    <div className="flex gap-3 px-6 py-2 items-center justify-between text-muted-foreground">
+                      <div className="text-xs flex items-center">
+                        <PlusIcon className="h-5 w-5" strokeWidth={1} />
+                        <span>
+                          {format(new Date(file.createdAt), "MMM yyyy")}
+                        </span>
                       </div>
-                      <div className="flex gap-3 px-6 py-2 items-center justify-between text-muted-foreground">
-                        <div className="text-xs flex items-center">
-                          <PlusIcon className="h-5 w-5" strokeWidth={1} />
-                          <span>
-                            {format(new Date(file.createdAt), "MMM yyyy")}
-                          </span>
-                        </div>
-                        <div className="truncate flex gap-1 items-center">
-                          <MessageSquare strokeWidth={1} className="h-5 w-5" />
-                          <p className="text-xs truncate">test</p>
-                        </div>
-                        <div>
-                          <Button
-                            className="bg-red-600/10 hover:bg-red-600/10 hover:ring-1 hover:ring-red-300 w-full"
-                            size={"sm"}
-                            onClick={() => deleteFile({ id: file.id })}
-                          >
-                            {!isDeleteLoading ? (
-                              <Trash
-                                className="h-4 w-4 text-red-600"
-                                strokeWidth={1}
-                              />
-                            ) : (
-                              <Loader2
-                                className="h-5 w-5 text-red-600 animate-spin"
-                                strokeWidth={1}
-                              />
-                            )}
-                          </Button>
-                        </div>
+                      <div className="truncate flex gap-1 items-center">
+                        <MessageSquare strokeWidth={1} className="h-5 w-5" />
+                        <p className="text-xs truncate">test</p>
                       </div>
-                    </li>
-                  </ul>
-                </div>
+                      <div>
+                        <Button
+                          className="bg-red-600/10 hover:bg-red-600/10 hover:ring-1 hover:ring-red-300 w-full"
+                          size={"sm"}
+                          onClick={() => deleteFile({ id: file.id })}
+                        >
+                          {deletingFile !== file.id ? (
+                            <Trash
+                              className="h-4 w-4 text-red-600"
+                              strokeWidth={1}
+                            />
+                          ) : (
+                            <Loader2
+                              className="h-5 w-5 text-red-600 animate-spin"
+                              strokeWidth={1}
+                            />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
               );
             })}
           </div>

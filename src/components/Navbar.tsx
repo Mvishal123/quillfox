@@ -13,7 +13,7 @@ const Navbar = () => {
             Quill<span className="text-primary">Fox</span>.
           </Link>
 
-          <div className="flex gap-4">
+          <div className="hidden sm:flex gap-4 ">
             <Link
               href="/pricing"
               className={buttonVariants({

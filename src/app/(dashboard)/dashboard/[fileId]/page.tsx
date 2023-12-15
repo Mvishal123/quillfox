@@ -1,6 +1,8 @@
 import { db } from "@/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import PdfRenderer from "../../_components/PdfRenderer";
+import ChatContainer from "../../_components/ChatContainer";
 
 interface PageProps {
   params: {
@@ -23,7 +25,23 @@ const page = async ({ params }: PageProps) => {
     },
   });
 
-  return <div>{JSON.stringify(file)}</div>;
+  if (!file) {
+    notFound();
+  }
+
+  return (
+    <div className="h-[calc(100vh-3.5rem)] mx-auto">
+      <div className="flex flex-col lg:flex-row h-full divide-y md:divide-x">
+        {/* make it resizable divs -drag and resize */}
+        <div className="flex-1 px-6">
+          <PdfRenderer />
+        </div>
+        <div className="flex flex-[0.75]">
+          <ChatContainer />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default page;

@@ -46,11 +46,31 @@ export const appRouter = router({
     });
   }),
 
-  deleteFile: authProcedure.input(
-      z.object({
-        id: z.string(),
-      })
-    ).mutation(async ({ ctx, input }) => {
+  getFile: authProcedure
+    .input(z.object({ key: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { getUser } = getKindeServerSession();
+      const user = await getUser();
+
+      if (!user) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      const file = await db.file.findFirst({
+        where: {
+          key: input.key,
+          userId: user.id,
+        },
+      });
+
+      if (!file) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return {
+        file,
+      };
+    }),
+
+  deleteFile: authProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
       const { userId } = ctx;
       const courseId = input.id;
 

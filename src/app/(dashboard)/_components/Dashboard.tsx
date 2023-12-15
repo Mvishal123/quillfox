@@ -64,7 +64,7 @@ const Dashboard = () => {
                           <MessageSquare strokeWidth={1} className="h-5 w-5" />
                           <p className="text-xs truncate">test</p>
                         </div>
-                        <div className="">
+                        <Link href="/dashboard" className="">
                           <Button
                             className="bg-red-600/10 hover:bg-red-600/10 hover:ring-1 hover:ring-red-300 w-full"
                             size={"sm"}
@@ -82,7 +82,7 @@ const Dashboard = () => {
                               />
                             )}
                           </Button>
-                        </div>
+                        </Link>
                       </div>
                     </li>
                   </ul>

@@ -4,6 +4,7 @@ import { TRPCProvider } from "@/components/trpcProvider";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "@/components/ui/toaster";
 import "react-loading-skeleton/dist/skeleton.css"
 
 const inter = Inter({ subsets: ["latin"] });
@@ -29,6 +30,7 @@ export default function RootLayout({
         >
           <Navbar />
           {children}
+          <Toaster />
         </body>
       </TRPCProvider>
     </html>

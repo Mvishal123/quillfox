@@ -1,3 +1,4 @@
+import { db } from "@/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
@@ -23,13 +24,17 @@ export const ourFileRouter = {
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Upload complete for userId:", metadata.userId);
-
-      console.log("file url", file.url);
+      await db.file.create({
+        data: {
+          key: file.key,
+          name: file.name,
+          url: file.url,
+          userId: metadata.userId,
+        },
+      });
 
       return {
-        file,
-        userId: metadata.userId,
+        url: file.url,
       };
     }),
 } satisfies FileRouter;

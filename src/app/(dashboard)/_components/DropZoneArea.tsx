@@ -1,14 +1,26 @@
 // "use client";
 
+import { trpc } from "@/app/_trpc/trpc-client";
 import { Progress } from "@/components/ui/progress";
-import { clear } from "console";
+import { useToast } from "@/components/ui/use-toast";
+import { useUploadThing } from "@/lib/uploadthing";
 import { Cloud, File } from "lucide-react";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import DropZone from "react-dropzone";
 
 const DropZoneArea = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<Boolean>(true);
   const [loaderStatus, setLoaderStatus] = useState<number>(0);
+  const { toast } = useToast();
+
+  const { mutate: getFilePolling } = trpc.getFile.useMutation({
+    onSuccess: ({ file }) => router.push(`/dashboard/${file.id}`),
+    retry: 10,
+    retryDelay: 500, //this is to retry indefinitely
+  });
+  const { startUpload } = useUploadThing("pdfUploader");
 
   const startProgressBar = () => {
     const interval = setInterval(() => {
@@ -28,16 +40,39 @@ const DropZoneArea = () => {
   return (
     <DropZone
       multiple={false}
-      onDrop={async (files) => {
-        console.log("[FILES]", files);
+      onDrop={async (file) => {
+        console.log("[FILES]", file);
 
         setIsLoading(true);
 
         const startProgress = startProgressBar();
-        clearInterval(startProgress);
 
+        const res = await startUpload(file);
+
+        if (!res) {
+          setIsLoading(false);
+          return toast({
+            title: "Something went wrong",
+            description: "Please try again later",
+            variant: "destructive",
+          });
+        }
+
+        const [uploadedFile] = res;
+        const key = uploadedFile.key;
+        if (!key) {
+          return toast({
+            title: "Something went wrong",
+            description: "Please try again later",
+            variant: "destructive",
+          });
+        }
+
+        clearInterval(startProgress);
         setLoaderStatus(100);
-        setTimeout(() => setIsLoading(false), 1000);
+
+        getFilePolling({ key });
+        setIsLoading(false);
       }}
     >
       {({ getRootProps, getInputProps, acceptedFiles }) => (
@@ -85,6 +120,7 @@ const DropZoneArea = () => {
                 ) : (
                   <></>
                 )}
+                <input className="hidden" {...getInputProps} />
               </div>
             </div>
           </label>

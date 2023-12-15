@@ -1,11 +1,45 @@
-"use client";
+// "use client";
 
+import { Progress } from "@/components/ui/progress";
+import { clear } from "console";
 import { Cloud, File } from "lucide-react";
+import { useState } from "react";
 import DropZone from "react-dropzone";
 
 const DropZoneArea = () => {
+  const [isLoading, setIsLoading] = useState<Boolean>(true);
+  const [loaderStatus, setLoaderStatus] = useState<number>(0);
+
+  const startProgressBar = () => {
+    const interval = setInterval(() => {
+      setLoaderStatus((prev) => {
+        if (prev > 85) {
+          clearInterval(interval);
+          return prev;
+        }
+
+        return prev + 5;
+      });
+    }, 500);
+
+    return interval;
+  };
+
   return (
-    <DropZone multiple={false} onDrop={(file) => console.log(file)}>
+    <DropZone
+      multiple={false}
+      onDrop={async (files) => {
+        console.log("[FILES]", files);
+
+        setIsLoading(true);
+
+        const startProgress = startProgressBar();
+        clearInterval(startProgress);
+
+        setLoaderStatus(100);
+        setTimeout(() => setIsLoading(false), 1000);
+      }}
+    >
       {({ getRootProps, getInputProps, acceptedFiles }) => (
         <div
           {...getRootProps()}
@@ -20,13 +54,13 @@ const DropZoneArea = () => {
                     <span className="text-primary/50 font-semibold">
                       Click to upload{" "}
                     </span>
-                    or drog and drop
+                    or drag and drop
                   </h1>
                   <p className="text-xs text-muted-foreground">
                     PDF (upto 4MB)
                   </p>
                 </div>
-                {!acceptedFiles && !acceptedFiles[0] ? (
+                {acceptedFiles && acceptedFiles[0] ? (
                   <div>
                     <div className="flex max-w-[8rem] mx-auto justify-between border divide-x px-3 py-2 rounded-md">
                       <div className="flex-[0.2]">
@@ -35,11 +69,22 @@ const DropZoneArea = () => {
                           strokeWidth={1}
                         />
                       </div>
-                      <div className="flex-1 text-xs pl-2">file.pdf</div>
+                      <div className="flex-1 text-xs pl-2 truncate">
+                        {acceptedFiles[0].name}
+                      </div>
                     </div>
                   </div>
                 ) : null}
-                {}
+                {isLoading ? (
+                  <div className="mt-2">
+                    <Progress
+                      value={loaderStatus}
+                      className="h-1 transition-all"
+                    />
+                  </div>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           </label>

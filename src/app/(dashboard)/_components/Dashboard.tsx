@@ -41,15 +41,15 @@ const Dashboard = () => {
       </div>
       <div className="w-full">
         {files && files.length !== 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 space-x-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {files.map((file, i) => {
               return (
                 <Link href={`/dashboard/${file.id}`}>
                   <ul key={i}>
                     <li className="bg-white rounded-md divide-y divide-slate-200">
                       <div className="flex gap-4 items-center px-8 py-4 truncate">
-                        <div className="bg-gradient-to-r from-rose-400 to-red-500 h-12 w-12 rounded-full" />
-                        <h1 className="text-xl font-semibold truncate">
+                        <div className="bg-gradient-to-r from-rose-400 to-red-500 h-12 w-12  rounded-full" />
+                        <h1 className="text-xl font-semibold truncate ml-2">
                           {file.name}
                         </h1>
                       </div>

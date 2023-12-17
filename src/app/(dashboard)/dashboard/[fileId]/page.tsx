@@ -34,7 +34,7 @@ const page = async ({ params }: PageProps) => {
       <div className="flex flex-col lg:flex-row h-full divide-y md:divide-x">
         {/* make it resizable divs -drag and resize */}
         <div className="flex-1 px-6">
-          <PdfRenderer />
+          <PdfRenderer pdfURL={file.url}/>
         </div>
         <div className="flex flex-[0.75]">
           <ChatContainer />

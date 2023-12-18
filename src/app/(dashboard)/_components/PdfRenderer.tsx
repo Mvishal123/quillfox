@@ -55,8 +55,8 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
       <div className="pt-4">
         <PdfFeatures pageData={FeaturesData} />
       </div>
-      <SimpleBar className="max-h-[calc(100vh - 10rem)]" autoHide={false}>
-        <div className="flex-1 mt-1 w-full max-h-screen">
+      <SimpleBar className="max-h-[calc(100vh-8rem)]" autoHide={false}>
+        <div className="flex-1 mt-2 w-full max-h-[calc(100vh-8rem)]">
           <div ref={ref}>
             <Document
               loading={

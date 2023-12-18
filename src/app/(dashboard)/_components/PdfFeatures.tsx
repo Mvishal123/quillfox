@@ -11,7 +11,14 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@radix-ui/react-dropdown-menu";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Rotate3D,
+  RotateCcw,
+  RotateCw,
+  Search,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 interface FeatureProps {
   pageNums: number;
@@ -21,6 +28,7 @@ interface FeatureProps {
   onPagePrev: () => void;
   pdfScale: number;
   setPdfScale: React.Dispatch<React.SetStateAction<number>>;
+  onRotate: () => void;
 }
 
 const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
@@ -99,19 +107,44 @@ const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
               <Button variant={"ghost"}>
                 <Search className="h-5 w-5" />
                 <span className="flex items-center gap-0.5 text-sm ml-2">
-                  {pageData.pdfScale * 100}% <ChevronDown className="h-5 w-5"/>
+                  {pageData.pdfScale * 100}% <ChevronDown className="h-5 w-5" />
                 </span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent asChild>
               <div className="flex flex-col gap-1 bg-slate-50 px-2">
-                <Button variant={"ghost"} onClick={() => pageData.setPdfScale(1)}>100%</Button>
-                <Button variant={"ghost"} onClick={() => pageData.setPdfScale(1.5)}>150%</Button>
-                <Button variant={"ghost"} onClick={() => pageData.setPdfScale(2)}>200%</Button>
-                <Button variant={"ghost"} onClick={() => pageData.setPdfScale(2.5)}>250%</Button>
+                <Button
+                  variant={"ghost"}
+                  onClick={() => pageData.setPdfScale(1)}
+                >
+                  100%
+                </Button>
+                <Button
+                  variant={"ghost"}
+                  onClick={() => pageData.setPdfScale(1.5)}
+                >
+                  150%
+                </Button>
+                <Button
+                  variant={"ghost"}
+                  onClick={() => pageData.setPdfScale(2)}
+                >
+                  200%
+                </Button>
+                <Button
+                  variant={"ghost"}
+                  onClick={() => pageData.setPdfScale(2.5)}
+                >
+                  250%
+                </Button>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+        <div>
+          <Button variant={"ghost"} onClick={pageData.onRotate}>
+            <RotateCw className="h-5 w-5 " />
+          </Button>
         </div>
       </div>
     </div>

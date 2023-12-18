@@ -21,6 +21,7 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
   const [pageNums, setPageNums] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pdfScale, setPdfScale] = useState<number>(1);
+  const [rotateDeg, setRotateDeg] = useState<number>(0);
 
   const router = useRouter();
   const { ref, width } = useResizeDetector();
@@ -40,6 +41,12 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
     setPageNumber((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
+  const onRotate = () => {
+    setRotateDeg((prev) => {
+      return prev <=360 ? prev + 90 : 0;
+    });
+  };
+
   const FeaturesData = {
     pageNums,
     pageNumber,
@@ -48,6 +55,7 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
     onPagePrev,
     pdfScale,
     setPdfScale,
+    onRotate
   };
 
   return (
@@ -80,6 +88,7 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
                 pageNumber={pageNumber}
                 width={width ? width : 1}
                 scale={pdfScale}
+                rotate={rotateDeg}
               />
             </Document>
           </div>

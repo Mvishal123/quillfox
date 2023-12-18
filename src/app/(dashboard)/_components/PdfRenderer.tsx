@@ -17,7 +17,7 @@ interface PageProps {
 }
 
 const PdfRenderer = ({ pdfURL }: PageProps) => {
-  const [pageNums, setPageNums] = useState<number>();
+  const [pageNums, setPageNums] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
 
   const router = useRouter();
@@ -32,10 +32,10 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
   };
 
   const onPageNext = () => {
-    setPageNumber((prev) => prev + 1);
+    setPageNumber((prev) => (prev < pageNums ? prev + 1 : prev));
   };
   const onPagePrev = () => {
-    setPageNumber((prev) => prev - 1);
+    setPageNumber((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
   const FeaturesData = {
@@ -71,7 +71,7 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
             onLoadSuccess={({ numPages }) => onDocumentLoadSuccess(numPages)}
             className="max-h-full"
           >
-            <Page pageNumber={1} width={width ? width : 1} />
+            <Page pageNumber={pageNumber} width={width ? width : 1} />
           </Document>
         </div>
       </div>

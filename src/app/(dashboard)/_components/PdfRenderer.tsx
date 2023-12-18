@@ -65,9 +65,9 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
       <div className="pt-4">
         <PdfFeatures pageData={FeaturesData} />
       </div>
-      <SimpleBar className="max-h-[calc(100vh-8rem)]" autoHide={false}>
+      <SimpleBar className="max-h-[calc(100vh-8rem)] mt-1" autoHide={false}>
         <div className="flex-1 mt-2 w-full max-h-[calc(100vh-8rem)]">
-          <div ref={ref}>
+          <div ref={ref} className="max-h-[calc(100vh-8rem)]  ">
             <Document
               loading={
                 <div className="mt-32 lg:mt-60 flex justify-center items-center">

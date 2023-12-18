@@ -8,6 +8,7 @@ import { useResizeDetector } from "react-resize-detector";
 
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
+import PdfFeatures from "./PdfFeatures";
 // worker for pdf
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -20,20 +21,35 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
   const [pageNumber, setPageNumber] = useState<number>(1);
 
   const router = useRouter();
+  const { ref, width } = useResizeDetector();
 
   const { toast } = useToast();
-  const onDocumentLoadSuccess = ({ pageNos }: { pageNos: number }) => {
+
+  const onDocumentLoadSuccess = (pageNos: number) => {
+    console.log("PAGE NUMBER: ", pageNos);
+
     setPageNums(pageNos);
   };
 
-  const { ref, width} = useResizeDetector();
+  const onPageNext = () => {
+    setPageNumber((prev) => prev + 1);
+  };
+  const onPagePrev = () => {
+    setPageNumber((prev) => prev - 1);
+  };
+
+  const FeaturesData = {
+    pageNums,
+    pageNumber,
+    setPageNumber,
+    onPageNext,
+    onPagePrev,
+  };
 
   return (
     <div>
       <div className="pt-4">
-        <div className="h-10 md:h-14 bg-white rounded-md shadow-md w-full px-2 flex justify-between items-center">
-          Features
-        </div>
+        <PdfFeatures pageData={FeaturesData} />
       </div>
       <div className="flex-1 mt-1 w-full max-h-screen">
         <div ref={ref}>
@@ -52,10 +68,10 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
               });
               router.push("/dashboard");
             }}
-            onLoadSuccess={() => onDocumentLoadSuccess}
+            onLoadSuccess={({ numPages }) => onDocumentLoadSuccess(numPages)}
             className="max-h-full"
           >
-            <Page pageNumber={1} width={width ? width : 1}/>
+            <Page pageNumber={1} width={width ? width : 1} />
           </Document>
         </div>
       </div>

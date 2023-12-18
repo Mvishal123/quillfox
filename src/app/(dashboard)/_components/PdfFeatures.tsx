@@ -6,7 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@radix-ui/react-dropdown-menu";
+import { ChevronDown, ChevronUp, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 interface FeatureProps {
   pageNums: number;
@@ -14,6 +19,8 @@ interface FeatureProps {
   setPageNumber: React.Dispatch<React.SetStateAction<number>>;
   onPageNext: () => void;
   onPagePrev: () => void;
+  pdfScale: number;
+  setPdfScale: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
@@ -82,6 +89,30 @@ const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
         >
           <ChevronUp />
         </Button>
+      </div>
+
+      {/*  second part*/}
+      <div className="flex justify-center items-center z-40">
+        <div className="flex">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant={"ghost"}>
+                <Search className="h-5 w-5" />
+                <span className="flex items-center gap-0.5 text-sm ml-2">
+                  {pageData.pdfScale * 100}% <ChevronDown className="h-5 w-5"/>
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent asChild>
+              <div className="flex flex-col gap-1 bg-slate-50 px-2">
+                <Button variant={"ghost"} onClick={() => pageData.setPdfScale(1)}>100%</Button>
+                <Button variant={"ghost"} onClick={() => pageData.setPdfScale(1.5)}>150%</Button>
+                <Button variant={"ghost"} onClick={() => pageData.setPdfScale(2)}>200%</Button>
+                <Button variant={"ghost"} onClick={() => pageData.setPdfScale(2.5)}>250%</Button>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </div>
   );

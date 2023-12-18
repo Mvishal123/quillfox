@@ -22,6 +22,7 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pdfScale, setPdfScale] = useState<number>(1);
   const [rotateDeg, setRotateDeg] = useState<number>(0);
+  const [isFullScreen, setIsFullScreen] = useState<Boolean>(false);
 
   const router = useRouter();
   const { ref, width } = useResizeDetector();
@@ -43,7 +44,7 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
 
   const onRotate = () => {
     setRotateDeg((prev) => {
-      return prev <=360 ? prev + 90 : 0;
+      return prev <= 360 ? prev + 90 : 0;
     });
   };
 
@@ -55,7 +56,8 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
     onPagePrev,
     pdfScale,
     setPdfScale,
-    onRotate
+    onRotate,
+    pdfURL,
   };
 
   return (

@@ -14,12 +14,19 @@ import {
 import {
   ChevronDown,
   ChevronUp,
-  Rotate3D,
-  RotateCcw,
+  Maximize,
   RotateCw,
   Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PdfFullScreenRenderer from "./PdfFullScreenRenderer";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 interface FeatureProps {
   pageNums: number;
   pageNumber: number;
@@ -29,6 +36,7 @@ interface FeatureProps {
   pdfScale: number;
   setPdfScale: React.Dispatch<React.SetStateAction<number>>;
   onRotate: () => void;
+  pdfURL: string;
 }
 
 const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
@@ -145,6 +153,19 @@ const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
           <Button variant={"ghost"} onClick={pageData.onRotate}>
             <RotateCw className="h-5 w-5 " />
           </Button>
+        </div>
+        <div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant={"ghost"}>
+                <Maximize className="h-5 w-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogClose></DialogClose>
+            <DialogContent className="max-w-7xl h-screen flex justify-center">
+              <PdfFullScreenRenderer url={pageData.pdfURL} data={pageData}/>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

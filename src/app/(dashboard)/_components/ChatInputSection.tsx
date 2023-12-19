@@ -14,14 +14,14 @@ const ChatInputSection = ({ disableStatus }: ChatInputProps) => {
           rows={1}
           maxRows={4}
           autoFocus
-          className="resize-none w-full focus-visible:ring-slate-800 pr-12 scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded"
+          className="resize-none w-full focus-visible:ring-slate-800 py-3 pr-12 scrollbar-w-2 scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded"
           placeholder="Ask fox anything..."
           disabled={disableStatus}
         />
         <Button
           variant={"dark"}
           size={"sm"}
-          className="absolute right-2 text-white h-6 md:h-9 "
+          className="absolute right-2 text-white h-6 md:h-8 "
         >
           <Send className="w-4 h-4"/>
         </Button>

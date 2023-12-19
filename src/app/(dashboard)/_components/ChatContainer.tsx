@@ -24,12 +24,13 @@ const ChatContainer = ({ fileId }: ChatSectionProps) => {
 
   if (isLoading) {
     return (
-      <div className="relative min-h-[100vh-1rem] h-full w-full ">
+      <div className="relative min-h-[100vh-1rem] h-full w-full">
         <div className="flex flex-col h-full w-full items-center justify-center">
           <Loader2 className="text-primary animate-spin mb-2" />
           <p className="font-semibold">Loading...</p>
           <p className="font-light">We're preparing your PDF.</p>
         </div>
+        <ChatInputSection disableStatus={isLoading} />
       </div>
     );
   }
@@ -101,11 +102,11 @@ const ChatContainer = ({ fileId }: ChatSectionProps) => {
     );
   }
   return (
-    <div className="px-6 py-4 flex flex-col divide-y">
-      <div className="">
+    <div className="px-6 py-4 flex flex-col h-full w-full">
+      <div className="flex-1">
         <ChatSection />
       </div>
-      <div className="">
+      <div className="w-full">
         <ChatInputSection disableStatus={isLoading} />
       </div>
     </div>

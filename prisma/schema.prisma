@@ -12,7 +12,8 @@ model User {
   id    String @id @unique
   email String @unique
 
-  file File[]
+  file    File[]
+  message Message[]
 }
 
 enum UploadStatus {
@@ -34,8 +35,25 @@ model File {
   User   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
 
+  message Message[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+}
+
+model Message {
+  id      String @id @default(cuid())
+  message String
+
+  isUserMessage Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  File      File?    @relation(fields: [fileId], references: [id])
+  fileId    String?
 }

@@ -30,6 +30,7 @@ export const ourFileRouter = {
           name: file.name,
           url: file.url,
           userId: metadata.userId,
+          uploadStatus: "PROCESSING"
         },
       });
 

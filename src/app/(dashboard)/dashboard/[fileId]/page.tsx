@@ -37,7 +37,7 @@ const page = async ({ params }: PageProps) => {
           <PdfRenderer pdfURL={file.url}/>
         </div>
         <div className="flex flex-[0.75]">
-          <ChatContainer />
+          <ChatContainer fileId={fileId}/>
         </div>
       </div>
     </div>

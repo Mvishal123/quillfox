@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import React, { createContext, useState } from "react";
+import axios from "axios";
 
 interface ChatType {
   addMessage: () => void;
@@ -27,26 +28,25 @@ export const ChatContextProvider = ({
 
   const { mutate: sendMessage } = useMutation({
     mutationFn: async ({ message }: { message: string | null }) => {
-      const res = await fetch("/api/message", {
-        method: "POST",
-        body: JSON.stringify({
-          fileId,
-          message,
-        }),
-      });
+      const res = await axios.post("/api/messages", {
+        fileId,
+        message,
+      }); //using axios instead of tRPC coz we need to stream the message
 
-      if (!res.ok) {
+      if (!res) {
         throw new Error("Failed to send message");
       }
 
-      return res;
+      return res.data;
     },
   });
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
 
   const addMessage = () => sendMessage({ message });
+
   return (
     <ChatContext.Provider
       value={{ message, isLoading, addMessage, handleInputChange }}

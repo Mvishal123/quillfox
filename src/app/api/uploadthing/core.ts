@@ -41,8 +41,9 @@ export const ourFileRouter = {
       });
 
       try {
-        const response = await fetch(fileData.url);
-        const blob = await response.blob();
+        const response = await fetch(fileData.url); //getting the file to work with (PDF)
+
+        const blob = await response.blob(); //Binary Large Object
 
         const loader = new PDFLoader(blob);
 
@@ -52,17 +53,16 @@ export const ourFileRouter = {
 
         const pineconeIndex = pinecone.index("quillfox");
 
+        // ---VECTORIZE THE DOCS---
+
         const embeddings = new OpenAIEmbeddings({
           openAIApiKey: process.env.OPENAI_API_KEY!,
-        });
-
-        console.log("EMBEDDINGS:", embeddings);
+        }); //Embedding model from openai
 
         await PineconeStore.fromDocuments(docs, embeddings, {
           pineconeIndex,
           namespace: fileData.id,
-        });
-        console.log("pinecone store done");
+        }); //Store in the vector db
 
         await db.file.update({
           data: {

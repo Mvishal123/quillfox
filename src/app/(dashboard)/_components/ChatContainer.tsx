@@ -7,6 +7,7 @@ import { trpc } from "@/app/_trpc/trpc-client";
 import { ChevronLeft, Loader2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { ChatContext, ChatContextProvider } from "@/app/store/ChatContext";
 
 interface ChatSectionProps {
   fileId: string;
@@ -102,14 +103,16 @@ const ChatContainer = ({ fileId }: ChatSectionProps) => {
     );
   }
   return (
-    <div className="px-6 py-4 flex flex-col h-full w-full">
-      <div className="flex-1">
-        <ChatSection />
+    <ChatContextProvider fileId={fileId}>
+      <div className="px-6 py-4 flex flex-col h-full w-full">
+        <div className="flex-1">
+          <ChatSection />
+        </div>
+        <div className="w-full">
+          <ChatInputSection disableStatus={isLoading} />
+        </div>
       </div>
-      <div className="w-full">
-        <ChatInputSection disableStatus={isLoading} />
-      </div>
-    </div>
+    </ChatContextProvider>
   );
 };
 

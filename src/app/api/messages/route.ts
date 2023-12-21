@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       { status: 401 }
     );
 
-  MessageApiValidator.parse(body);
+  MessageApiValidator.parse(body); //backend zod input validation. If !success throws error. No need to handle seperately
 
   const { fileId, message } = body;
 
@@ -31,26 +31,26 @@ export async function POST(req: NextRequest) {
       isUserMessage: true,
       userId: user.id,
     },
-  });
+  }); //create user msg in the db
 
-  // 1. Vectorize the incoming message
-  const vectorisedMessage = new OpenAIEmbeddings({
+  // Vectorize the incoming message
+  const embeddings = new OpenAIEmbeddings({
     openAIApiKey: process.env.OPENAI_API_KEY!,
   });
 
   const pinecone = await getPineconeClient();
   const pineconeIndex = pinecone.Index("quillfox");
 
-  const vectorStore = await PineconeStore.fromExistingIndex(vectorisedMessage, {
+  const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
     pineconeIndex,
     namespace: fileId,
   });
 
-  console.log("VECTOR STORE:", vectorStore);
+  // console.log("VECTOR STORE:", vectorStore);
 
   const results = await vectorStore.similaritySearch(message, 4);
 
-  console.log("RESULTS:", results);
+  // console.log("RESULTS:", results);
 
   const prevMessges = await db.message.findMany({
     where: {
@@ -63,11 +63,13 @@ export async function POST(req: NextRequest) {
     take: 8,
   });
 
+  //format the message in the format accepted by openai api
   const formattedMessages = prevMessges.map((msg) => ({
     role: msg.isUserMessage ? ("user" as const) : ("assistant" as const),
     content: msg.message,
   }));
 
+  //prompting chatgpt
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     temperature: 0,

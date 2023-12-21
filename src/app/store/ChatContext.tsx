@@ -28,6 +28,7 @@ export const ChatContextProvider = ({
 
   const { mutate: sendMessage } = useMutation({
     mutationFn: async ({ message }: { message: string | null }) => {
+      setIsLoading(true);
       const res = await axios.post("/api/messages", {
         fileId,
         message,

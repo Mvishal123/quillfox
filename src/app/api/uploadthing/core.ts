@@ -44,13 +44,10 @@ export const ourFileRouter = {
         const response = await fetch(fileData.url); //getting the file to work with (PDF)
 
         const blob = await response.blob(); //Binary Large Object
-
         const loader = new PDFLoader(blob);
-
         const docs = await loader.load();
 
         const pinecone = await getPineconeClient();
-
         const pineconeIndex = pinecone.index("quillfox");
 
         // ---VECTORIZE THE DOCS---
@@ -73,7 +70,7 @@ export const ourFileRouter = {
           },
         });
 
-        console.log("File status updated");
+        // console.log("File status updated");
 
         return {
           url: file.url,
@@ -88,7 +85,7 @@ export const ourFileRouter = {
             uploadStatus: "FAILED",
           },
         });
-        console.log("[UPLOADTHING ERROR:", error);
+        console.log("[UPLOADTHING ERROR]:", error);
         throw new Error(error);
       }
     }),

@@ -3,6 +3,7 @@ import { authProcedure, publicProcedure, router } from "./trpc";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { db } from "@/db";
 import { TRPCError } from "@trpc/server";
+import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query-message";
 
 export const appRouter = router({
   authChecker: publicProcedure.query(async () => {
@@ -45,6 +46,57 @@ export const appRouter = router({
       },
     });
   }),
+
+  getFileMessages: authProcedure
+    .input(
+      z.object({
+        fileId: z.string(),
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.string().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = input.limit ? input.limit : INFINITE_QUERY_LIMIT;
+      const file = await db.file.findFirst({
+        where: {
+          userId: ctx.userId,
+          id: input.fileId,
+        },
+      });
+
+      if (!file) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      const messages = await db.message.findMany({
+        take: limit + 1,
+        where: {
+          fileId: input.fileId,
+          userId: ctx.userId,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        select: {
+          createdAt: true,
+          id: true,
+          isUserMessage: true,
+          message: true,
+        },
+      });
+
+      let nextCursor: typeof input.cursor | undefined = undefined;
+      if (messages.length > limit) {
+        const nextMessage = messages.pop();
+        nextCursor = nextMessage?.id;
+      }
+
+      return {
+        messages,
+        nextCursor,
+      };
+    }),
 
   getFileUploadStatus: authProcedure
     .input(z.object({ fileId: z.string() }))

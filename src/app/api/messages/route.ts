@@ -38,19 +38,15 @@ export async function POST(req: NextRequest) {
     openAIApiKey: process.env.OPENAI_API_KEY!,
   });
 
-  const pinecone = await getPineconeClient();
-  const pineconeIndex = pinecone.Index("quillfox");
+  const pinecone = await getPineconeClient(); //client for vector database
+  const pineconeIndex = pinecone.Index("quillfox");//index to connect to our database
 
   const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
     pineconeIndex,
     namespace: fileId,
   });
 
-  // console.log("VECTOR STORE:", vectorStore);
-
   const results = await vectorStore.similaritySearch(message, 4);
-
-  // console.log("RESULTS:", results);
 
   const prevMessges = await db.message.findMany({
     where: {
@@ -103,6 +99,8 @@ export async function POST(req: NextRequest) {
     ],
   });
 
+
+  //api to stream the message as in chatgpt. 
   const stream = OpenAIStream(response, {
     async onCompletion(completion) {
       await db.message.create({

@@ -45,7 +45,7 @@ model File {
 
 model Message {
   id      String @id @default(cuid())
-  message String
+  message String @db.Text
 
   isUserMessage Boolean @default(false)
 

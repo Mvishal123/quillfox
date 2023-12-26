@@ -66,8 +66,6 @@ const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
     setValue("pageNumber", String(pageData.pageNumber));
   };
 
-  console.log("PAGE NUMBER", pageData.pageNumber);
-
   return (
     <div className="h-10 md:h-14 bg-white rounded-md shadow-md w-full px-2 flex justify-between items-center">
       <div className="flex gap-1">
@@ -163,7 +161,7 @@ const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
             </DialogTrigger>
             <DialogClose></DialogClose>
             <DialogContent className="max-w-7xl h-screen flex justify-center">
-              <PdfFullScreenRenderer url={pageData.pdfURL} data={pageData}/>
+              <PdfFullScreenRenderer url={pageData.pdfURL} data={pageData} />
             </DialogContent>
           </Dialog>
         </div>

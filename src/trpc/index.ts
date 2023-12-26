@@ -75,7 +75,7 @@ export const appRouter = router({
           userId: ctx.userId,
         },
         orderBy: {
-          createdAt: "asc",
+          createdAt: "desc",
         },
         cursor: input.cursor ? { id: input.cursor } : undefined,
         select: {

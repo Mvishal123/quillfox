@@ -8,7 +8,6 @@ const isAuthorized = middleware(async (opts) => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  console.log("[USER MIDDLEWARE]", user);
   
 
   if (!user || !user.id) {

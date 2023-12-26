@@ -1,4 +1,4 @@
-import { ChatContext } from "@/app/store/ChatContext";
+import { ChatContext } from "@/store/ChatContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
@@ -24,7 +24,6 @@ const ChatInputSection = ({ disableStatus }: ChatInputProps) => {
 
               addMessage();
               textRef.current?.focus();
-              textRef.current?.value;
             }
           }}
           ref={textRef}

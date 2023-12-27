@@ -3,6 +3,7 @@ import React, { createContext, useRef, useState } from "react";
 import axios from "axios";
 import { trpc } from "@/app/_trpc/trpc-client";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query-message";
+import { toast } from "@/components/ui/use-toast";
 
 interface ChatType {
   addMessage: () => void;
@@ -52,7 +53,7 @@ export const ChatContextProvider = ({
 
       await utils.getFileMessages.cancel();
 
-      const oldMessages = utils.getFileMessages.getInfiniteData();
+      const oldMessages = utils.getFileMessages.getInfiniteData(); // to get the currently cached data
 
       utils.getFileMessages.setInfiniteData(
         { limit: INFINITE_QUERY_LIMIT, fileId },
@@ -96,6 +97,32 @@ export const ChatContextProvider = ({
         { fileId },
         { messages: ctx?.oldMessages ?? [] }
       );
+    },
+
+    onSuccess: async ({ stream }) => {
+      setIsLoading(false);
+
+      if (!stream) {
+        return toast({
+          title: "There's something wrong in our server",
+          description: "Please try again later",
+          variant: "destructive",
+        });
+      }
+
+      const reader = stream.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      let accumulatedRes = "";
+
+      while (!done) {
+        const {done: doneReading, value} = await reader.read();
+        done = doneReading
+        const chunkValue = decoder.decode(value);
+
+
+      }
     },
 
     onSettled: async () => {

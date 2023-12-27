@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   });
 
   const pinecone = await getPineconeClient(); //client for vector database
-  const pineconeIndex = pinecone.Index("quillfox");//index to connect to our database
+  const pineconeIndex = pinecone.Index("quillfox"); //index to connect to our database
 
   const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
     pineconeIndex,
@@ -99,8 +99,7 @@ export async function POST(req: NextRequest) {
     ],
   });
 
-
-  //api to stream the message as in chatgpt. 
+  //api to stream the message as in chatgpt.
   const stream = OpenAIStream(response, {
     async onCompletion(completion) {
       await db.message.create({
@@ -113,5 +112,5 @@ export async function POST(req: NextRequest) {
       });
     },
   });
-  return new StreamingTextResponse(stream);
+  return { stream: new StreamingTextResponse(stream) };
 }

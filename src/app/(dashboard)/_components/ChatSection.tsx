@@ -2,7 +2,7 @@
 
 import { trpc } from "@/app/_trpc/trpc-client";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query-message";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageSquare } from "lucide-react";
 import React, { useContext } from "react";
 import Message from "./Message";
 import { ChatContext } from "@/store/ChatContext";
@@ -39,7 +39,7 @@ const ChatSection = ({ fileId }: { fileId: string }) => {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] lg:h-[calc(100vh-10rem)]  flex-col-reverse p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrolbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-slate-50">
+    <div className="flex h-[calc(100vh-5rem)] lg:h-[calc(100vh-10rem)] flex-col-reverse p-3 pb-20 lg:pb-0 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrolbar-track-blue-lighter scrollbar-w-2 scrolling-touch bg-slate-50">
       {combinedMessage && combinedMessage.length > 0 ? (
         <div className="flex flex-col-reverse gap-4">
           {combinedMessage.map((msg, i) => {
@@ -66,7 +66,11 @@ const ChatSection = ({ fileId }: { fileId: string }) => {
       ) : isLoading ? (
         <div></div>
       ) : (
-        <div></div>
+        <div className="h-full flex flex-col gap-4 justify-center items-center">
+          <MessageSquare className="h-6 w-6 text-slate-800" />
+          <p>All set</p>
+          <p>Start chatting with you doc</p>
+        </div>
       )}
     </div>
   );

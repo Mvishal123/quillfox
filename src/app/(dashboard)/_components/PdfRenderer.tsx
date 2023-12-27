@@ -30,7 +30,7 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
   const { toast } = useToast();
 
   const onDocumentLoadSuccess = (pageNos: number) => {
-    console.log("PAGE NUMBER: ", pageNos);
+    // console.log("PAGE NUMBER: ", pageNos);
 
     setPageNums(pageNos);
   };
@@ -75,9 +75,9 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
                 </div>
               }
               file={pdfURL}
-              onLoadError={() => {
+              onLoadError={(err) => {
                 toast({
-                  title: "Error loading PDF",
+                  title: `${err}`,
                   description: "try again later",
                   variant: "destructive",
                 });

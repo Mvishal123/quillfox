@@ -30,8 +30,6 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
   const { toast } = useToast();
 
   const onDocumentLoadSuccess = (pageNos: number) => {
-    // console.log("PAGE NUMBER: ", pageNos);
-
     setPageNums(pageNos);
   };
 
@@ -65,9 +63,15 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
       <div className="pt-4">
         <PdfFeatures pageData={FeaturesData} />
       </div>
-      <SimpleBar className="max-h-[calc(100vh-45vh)] lg:max-h-[calc(100vh-8rem)] mt-1" autoHide={false}>
+      <SimpleBar
+        className="max-h-[calc(100vh-45vh)] lg:max-h-[calc(100vh-8rem)] mt-1"
+        autoHide={false}
+      >
         <div className="flex-1 mt-2 w-full">
-          <div ref={ref} className="max-h-[calc(100vh-45vh)] lg:max-h-[calc(100vh-8rem)]">
+          <div
+            ref={ref}
+            className="max-h-[calc(100vh-45vh)] lg:max-h-[calc(100vh-8rem)]"
+          >
             <Document
               loading={
                 <div className="mt-32 lg:mt-60 flex justify-center items-center">
@@ -75,9 +79,9 @@ const PdfRenderer = ({ pdfURL }: PageProps) => {
                 </div>
               }
               file={pdfURL}
-              onLoadError={(err) => {
+              onLoadError={() => {
                 toast({
-                  title: `${err}`,
+                  title: "Error loading PDF",
                   description: "try again later",
                   variant: "destructive",
                 });

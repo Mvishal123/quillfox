@@ -32,6 +32,7 @@ export const ChatContextProvider = ({
   const backupMessage = useRef<string | null>("");
 
   const utils = trpc.useUtils();
+
   const { mutate: sendMessage } = useMutation({
     mutationFn: async ({ message }: { message: string | null }) => {
       setIsLoading(true);
@@ -53,7 +54,7 @@ export const ChatContextProvider = ({
 
       await utils.getFileMessages.cancel();
 
-      const oldMessages = utils.getFileMessages.getInfiniteData(); // to get the currently cached data
+      const prevPages = utils.getFileMessages.getInfiniteData(); // to get the currently cached data
 
       utils.getFileMessages.setInfiniteData(
         { limit: INFINITE_QUERY_LIMIT, fileId },
@@ -65,8 +66,8 @@ export const ChatContextProvider = ({
             };
           }
 
-          let prevPages = [...old.pages];
-          let newestPage = prevPages[0]!;
+          let newPage = [...old.pages];
+          let newestPage = newPage[0]!;
 
           newestPage.messages = [
             {
@@ -76,36 +77,38 @@ export const ChatContextProvider = ({
               message: message ?? "",
             },
             ...newestPage.messages,
-          ];
+          ]; // adding optimistic message to client
 
-          prevPages[0] = newestPage;
+          newPage[0] = newestPage;
           return {
             ...old,
-            pages: prevPages,
+            pages: newPage,
           };
         }
       );
 
       setIsLoading(true);
       return {
-        oldMessages: oldMessages?.pages.flatMap((page) => page.messages) ?? [],
+        prevPages: prevPages?.pages.flatMap((page) => page.messages) ?? [],
       };
     },
 
-    onError: (err, variables, ctx) => {
+    // here underscore states that the parameters are unused.
+    onError: (_, __, ctx) => {
       utils.getFileMessages.setData(
         { fileId },
-        { messages: ctx?.oldMessages ?? [] }
+        { messages: ctx?.prevPages ?? [] }
       );
     },
 
-    onSuccess: async ({ stream }) => {
+    onSuccess: async (stream) => {
       setIsLoading(false);
 
+      //-----------IMPLEMENT STREAMING LATER-----------------
       if (!stream) {
         return toast({
           title: "There's something wrong in our server",
-          description: "Please try again later",
+          description: "Please try again later. No streaming",
           variant: "destructive",
         });
       }
@@ -117,11 +120,64 @@ export const ChatContextProvider = ({
       let accumulatedRes = "";
 
       while (!done) {
-        const {done: doneReading, value} = await reader.read();
-        done = doneReading
+        const { done: doneReading, value } = await reader.read();
+        done = doneReading;
         const chunkValue = decoder.decode(value);
 
+        accumulatedRes += chunkValue;
 
+        utils.getFileMessages.setInfiniteData(
+          { fileId, limit: INFINITE_QUERY_LIMIT },
+          (oldPages) => {
+            if (!oldPages) {
+              return {
+                pages: [],
+                pageParams: [],
+              };
+            }
+
+            let isAIResponseCreated = oldPages.pages.some((page) =>
+              page.messages.some((msg) => msg.id === "ai-response")
+            ); // to check if there is already a message streaming.
+
+            let updatedPages = oldPages.pages.map((page) => {
+              if (page === oldPages.pages[0]) {
+                let updatedMessage;
+                if (!isAIResponseCreated) {
+                  updatedMessage = [
+                    {
+                      id: "ai-response",
+                      createdAt: new Date().toISOString(),
+                      message: accumulatedRes,
+                      isUserMessage: false,
+                    },
+                    ...page.messages,
+                  ];
+                } else {
+                  updatedMessage = page.messages.map((msg) => {
+                    if (msg.id === "ai-response") {
+                      return {
+                        ...msg,
+                        message: accumulatedRes,
+                      };
+                    }
+
+                    return msg;
+                  });
+                }
+
+                return {
+                  ...page,
+                  messages: updatedMessage,
+                };
+              }
+
+              return page;
+            });
+
+            return { ...oldPages, pages: updatedPages };
+          }
+        );
       }
     },
 

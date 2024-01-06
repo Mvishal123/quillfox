@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       },
       {
         role: "user",
-        content: `Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format. \nIf you don't know the answer, just say that you don't know, don't try to make up an answer.
+        content: `Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format. \nIf you don't know the answer, just say that you don't know, don't try to make up an answer. If the question is not related to the PDF content, don't answer.
           
     \n----------------\n
     
@@ -107,10 +107,10 @@ export async function POST(req: NextRequest) {
           message: completion,
           isUserMessage: false,
           fileId,
-          userId: user.id,
+          userId: user.id,  
         },
       });
     },
   });
-  return { stream: new StreamingTextResponse(stream) };
+  return new StreamingTextResponse(stream);
 }

@@ -9,7 +9,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Check, Divide, HelpCircle } from "lucide-react";
+import { Check, HelpCircle } from "lucide-react";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import PlanUpgradeButton from "@/components/PlanUpgradeButton";
 
 const pricingItems = [
   {
@@ -66,7 +70,10 @@ const pricingItems = [
   },
 ];
 
-const PricingPage = () => {
+const PricingPage = async () => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
   return (
     <MaxWidthContainer className="max-w-5xl text-center mt-24 mb-12">
       <div className="space-y-2">
@@ -86,6 +93,7 @@ const PricingPage = () => {
 
           return (
             <div
+              key={name}
               className={cn(
                 "relative border border-slate-200 shadow-lg bg-slate-50 rounded-md pb-6 pt-2",
                 {
@@ -96,9 +104,9 @@ const PricingPage = () => {
               <div>
                 <div
                   className={cn(
-                    "absolute left-0 right-0 -top-3 font-bold text-center mx-auto w-32 py-0.5 rounded-xl text-sm",
+                    "absolute left-0 right-0 -top-3 font-bold text-center mx-auto w-32 py-2 rounded-xl text-xs",
                     {
-                      "bg-gradient-to-r from-primary to-red-700 text-white":
+                      "bg-gradient-to-r from-primary to-red-900 text-white":
                         isPro,
                       "bg-slate-300": !isPro,
                     }
@@ -123,7 +131,7 @@ const PricingPage = () => {
               </div>
               <div className="w-full bg-slate-100 py-2 border-y">
                 <p className="flex justify-center items-center gap-2">
-                  {isPro ? "50 PDFs/mon included" : "12 PDFs/mon included"}
+                  {isPro ? "50 PDFs/month included" : "12 PDFs/month included"}
                   <TooltipProvider>
                     <Tooltip delayDuration={300}>
                       <TooltipContent className="text-xs">
@@ -139,16 +147,19 @@ const PricingPage = () => {
                 </p>
               </div>
               <ul className="flex flex-col gap-3  justify-center px-12 pt-8">
-                {features.map(({ text, footnote, negative }) => {
+                {features.map(({ text, footnote, negative }, i) => {
                   return (
-                    <li className="flex gap-2">
-                    <Check className={cn("h-4 w-4", {
-                        "text-slate-300": negative,
-                        "text-primary shadow-sm rounded-full shadow-primary": !negative
-                    })}/>
+                    <li className="flex gap-2 flex-shrink-0" key={i}>
+                      <Check
+                        className={cn("h-4 w-4", {
+                          "text-slate-300": negative,
+                          "text-primary shadow-sm rounded-full shadow-primary":
+                            !negative,
+                        })}
+                      />
                       {text}
                       <span>
-                        { !negative && footnote &&
+                        {!negative && footnote && (
                           <TooltipProvider>
                             <Tooltip delayDuration={300}>
                               <TooltipContent className="text-xs">
@@ -159,12 +170,29 @@ const PricingPage = () => {
                               </TooltipTrigger>
                             </Tooltip>
                           </TooltipProvider>
-                        }
+                        )}
                       </span>
                     </li>
                   );
                 })}
               </ul>
+              <div className="px-2 mt-12">
+                {name.toLowerCase() === "free" ? (
+                  <Link
+                    href={user ? "/dashboard" : "/sign-in"}
+                    className={buttonVariants({
+                      variant: "secondary",
+                      className: "w-full",
+                    })}
+                  >
+                    {user ? "continue" : "sign in"}
+                  </Link>
+                ) : user ? (
+                  <PlanUpgradeButton user={user} />
+                ) : (
+                  <PlanUpgradeButton user={user} />
+                )}
+              </div>
             </div>
           );
         })}

@@ -3,21 +3,35 @@
 import { trpc } from "@/app/_trpc/trpc-client";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query-message";
 import { Loader2, MessageSquare } from "lucide-react";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import Message from "./Message";
 import { ChatContext } from "@/store/ChatContext";
+import { useIntersection } from "@mantine/hooks";
 
 const ChatSection = ({ fileId }: { fileId: string }) => {
-  const { data, isLoading } = trpc.getFileMessages.useInfiniteQuery(
-    {
-      limit: INFINITE_QUERY_LIMIT,
-      fileId,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage?.nextCursor,
-      keepPreviousData: true,
+  const { data, isLoading, fetchNextPage } =
+    trpc.getFileMessages.useInfiniteQuery(
+      {
+        limit: INFINITE_QUERY_LIMIT,
+        fileId,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage?.nextCursor,
+        keepPreviousData: true,
+      }
+    );
+
+  const cursorMessageRef = useRef<HTMLDivElement>(null);
+  const { ref, entry } = useIntersection({
+    root: cursorMessageRef.current,
+    threshold: 1,
+  });
+
+  useEffect(() => {
+    if (entry?.isIntersecting) {
+      fetchNextPage();
     }
-  );
+  }, [entry, fetchNextPage]);
 
   const messages = data?.pages.flatMap((msg) => msg.messages);
 
@@ -49,6 +63,7 @@ const ChatSection = ({ fileId }: { fileId: string }) => {
             if (i === combinedMessage.length - 1) {
               return (
                 <Message
+                  ref={ref}
                   message={msg}
                   isNextMessageSamePerson={isNextMsgSamePerson}
                 />
@@ -56,6 +71,7 @@ const ChatSection = ({ fileId }: { fileId: string }) => {
             } else {
               return (
                 <Message
+                  ref={ref}
                   message={msg}
                   isNextMessageSamePerson={isNextMsgSamePerson}
                 />

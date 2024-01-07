@@ -29,7 +29,7 @@ const ChatContainer = ({ fileId }: ChatSectionProps) => {
         <div className="flex flex-col h-full w-full items-center justify-center">
           <Loader2 className="text-primary animate-spin mb-2" />
           <p className="font-semibold">Loading...</p>
-          <p className="font-light">We're preparing your PDF.</p>
+          <p className="font-light">We&apos;re preparing your PDF.</p>
         </div>
         <ChatInputSection disableStatus={isLoading} />
       </div>
@@ -97,7 +97,7 @@ const ChatContainer = ({ fileId }: ChatSectionProps) => {
         <div className="flex flex-col h-full w-full items-center justify-center">
           <Loader2 className="text-primary animate-spin mb-2" />
           <p className="font-semibold">Loading...</p>
-          <p className="font-light">We're preparing your PDF.</p>
+          <p className="font-light">We&apos;re preparing your PDF.</p>
         </div>
       </div>
     );

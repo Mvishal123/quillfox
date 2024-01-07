@@ -16,7 +16,7 @@ const page = () => {
           <span className="text-primary">documents </span>in seconds
         </h1>
         <p className="mt-6 text-md md:text-lg text-center max-w-prose">
-          Quillfox allows you to have conversations with any PDF's. Simply
+          Quillfox allows you to have conversations with any PDF&apos;s. Simply
           upload and start. She is brilliant and cunningly intelligent as a{" "}
           <span className="underline font-semibold">fox</span>
         </p>

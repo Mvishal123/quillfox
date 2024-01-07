@@ -63,6 +63,7 @@ const ChatSection = ({ fileId }: { fileId: string }) => {
             if (i === combinedMessage.length - 1) {
               return (
                 <Message
+                  key={i}
                   ref={ref}
                   message={msg}
                   isNextMessageSamePerson={isNextMsgSamePerson}
@@ -71,6 +72,7 @@ const ChatSection = ({ fileId }: { fileId: string }) => {
             } else {
               return (
                 <Message
+                  key={i}
                   ref={ref}
                   message={msg}
                   isNextMessageSamePerson={isNextMsgSamePerson}

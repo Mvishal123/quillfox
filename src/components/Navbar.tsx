@@ -9,15 +9,15 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/server";
 import UserProfileButton from "./UserProfileButton";
 import { getUserSubscriptionPlan } from "@/lib/stripe";
+import MobileNavbar from "./MobileNavbar";
 
 const Navbar = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
   // console.log(user?.given_name);
 
-  const isSubscribed = await getUserSubscriptionPlan()
+  const isSubscribed = await getUserSubscriptionPlan();
   console.log(isSubscribed);
-  
 
   return (
     <nav className="sticky top-0 z-30 inset-x-0 w-full bg-white/75 h-14 border-b border-b-slate-200 backdrop-blur-lg transition-all">
@@ -27,62 +27,66 @@ const Navbar = async () => {
             Quill<span className="text-primary">Fox</span>.
           </Link>
 
-          {!user ? (
-            // user not signed in
-            <div className="hidden sm:flex gap-4 ">
-              <Link
-                href="/pricing"
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                })}
-              >
-                Pricing
-              </Link>
+          <MobileNavbar isAuthorized={!!user}/>
 
-              <LoginLink
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                })}
-              >
-                Signin
-              </LoginLink>
+          <div className="hidden md:inline-block">
+            {!user ? (
+              // user not signed in
+              <div className="hidden sm:flex gap-4 ">
+                <Link
+                  href="/pricing"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  })}
+                >
+                  Pricing
+                </Link>
 
-              <RegisterLink
-                className={buttonVariants({
-                  variant: "dark",
-                  size: "sm",
-                  className: "group",
-                })}
-              >
-                Get started
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-[2px] transition-all" />
-              </RegisterLink>
-            </div>
-          ) : (
-            // user signed in
-            <div className="flex justify-between items-center gap-4">
-              <Link
-                className={buttonVariants({
-                  variant: "ghost",
-                })}
-                href={"/dashboard"}
-              >
-                Dashboard
-              </Link>
-              <UserProfileButton
-                name={
-                  !user.given_name || !user.family_name
-                    ? "Your Account"
-                    : `${user.given_name} ${user.family_name}`
-                }
-                email={user.email ?? ""}
-                imageUrl={user.picture ?? ""}
-                isSubscribed={isSubscribed.isSubscribed}
-              />
-            </div>
-          )}
+                <LoginLink
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  })}
+                >
+                  Signin
+                </LoginLink>
+
+                <RegisterLink
+                  className={buttonVariants({
+                    variant: "dark",
+                    size: "sm",
+                    className: "group",
+                  })}
+                >
+                  Get started
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-[2px] transition-all" />
+                </RegisterLink>
+              </div>
+            ) : (
+              // user signed in
+              <div className="flex justify-between items-center gap-4">
+                <Link
+                  className={buttonVariants({
+                    variant: "ghost",
+                  })}
+                  href={"/dashboard"}
+                >
+                  Dashboard
+                </Link>
+                <UserProfileButton
+                  name={
+                    !user.given_name || !user.family_name
+                      ? "Your Account"
+                      : `${user.given_name} ${user.family_name}`
+                  }
+                  email={user.email ?? ""}
+                  imageUrl={user.picture ?? ""}
+                  isSubscribed={isSubscribed.isSubscribed}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </MaxWidthContainer>
     </nav>

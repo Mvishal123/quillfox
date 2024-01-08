@@ -10,7 +10,7 @@ const MaxWidthContainer = ({
 }) => {
   return (
     <div
-      className={cn("mx-auto px-4 md:px-20 w-full max-w-screen-xl", className)}
+      className={cn("mx-auto px-6 md:px-20 w-full max-w-screen-xl", className)}
     >
       {children}
     </div>

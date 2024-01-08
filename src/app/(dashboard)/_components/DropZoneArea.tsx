@@ -41,8 +41,6 @@ const DropZoneArea = ({ isSubscribed }: { isSubscribed: boolean }) => {
     <DropZone
       multiple={false}
       onDrop={async (file) => {
-        console.log("[FILES]", file);
-
         setIsLoading(true);
 
         const startProgress = startProgressBar();

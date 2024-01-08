@@ -32,11 +32,6 @@ const PdfFullScreenRenderer = ({
   const { toast } = useToast();
   const { ref, width } = useResizeDetector();
 
-  console.log("DATA", data);
-
-  //   const onDocumentLoadSuccess = (pageNos: number) => {
-  //     console.log("PAGE NUMBER: ", pageNos);
-  //   };
   return (
     <div className="w-full">
       <SimpleBar autoHide={false} className="">

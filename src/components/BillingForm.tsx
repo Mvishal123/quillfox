@@ -22,6 +22,7 @@ const BillingForm = ({ isUserSubscribed }: BillingFormProps) => {
   const { mutate: createStripeSession, isLoading } =
     trpc.createStripeSession.useMutation({
       onSuccess: ({ url }) => {
+        if (url) window.location.href = url;
         if (!url) {
           toast({
             variant: "destructive",
@@ -67,6 +68,7 @@ const BillingForm = ({ isUserSubscribed }: BillingFormProps) => {
                   ? "Manage subscription"
                   : "Upgrade to pro"}
               </Button>
+
               {isUserSubscribed.isSubscribed ? (
                 <p className="text-sm mt-2 text-slate-500">
                   {isUserSubscribed.isCanceled

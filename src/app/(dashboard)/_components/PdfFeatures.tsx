@@ -60,8 +60,6 @@ const PdfFeatures = ({ pageData }: { pageData: FeatureProps }) => {
   });
 
   const onSubmit = ({ pageNumber }: TinputValidation) => {
-    console.log(pageNumber);
-
     pageData.setPageNumber(Number(pageNumber));
     setValue("pageNumber", String(pageData.pageNumber));
   };

@@ -104,7 +104,8 @@ export const appRouter = router({
   createStripeSession: authProcedure.mutation(async ({ ctx }) => {
     const { userId } = ctx;
     if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
-    const billingUrl = absoluteUrl("dashboard/billing");
+    const billingUrl = absoluteUrl("/dashboard/billing");
+    console.log("Billing url:", billingUrl);
 
     const user = await db.user.findFirst({
       where: {
@@ -121,8 +122,7 @@ export const appRouter = router({
         customer: user.stripeCustomerId!,
         return_url: billingUrl,
       });
-
-      return { url: stripeSession.url };
+      return { url: stripeSession?.url };
     }
 
     const stripeSession = await stripe.checkout.sessions.create({

@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Link from "next/link";
 
-const Dashboard = () => {
+const Dashboard = ({ isSubscribed }: { isSubscribed: boolean }) => {
   // to show the loader only on the file being deleted
   const [deletingFile, setDeletingFile] = useState<string | null>(null);
 

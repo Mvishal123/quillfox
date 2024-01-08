@@ -1,16 +1,13 @@
-// "use client";
-
 import { trpc } from "@/app/_trpc/trpc-client";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import { useUploadThing } from "@/lib/uploadthing";
-import { cn } from "@/lib/utils";
-import { Cloud, Divide, File } from "lucide-react";
+import { Cloud, File } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DropZone from "react-dropzone";
 
-const DropZoneArea = () => {
+const DropZoneArea = ({ isSubscribed }: { isSubscribed: boolean }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<Boolean>(true);
   const [loaderStatus, setLoaderStatus] = useState<number>(0);
@@ -21,7 +18,9 @@ const DropZoneArea = () => {
     retry: 10,
     retryDelay: 500, //this is to retry indefinitely
   });
-  const { startUpload } = useUploadThing("pdfUploader");
+  const { startUpload } = useUploadThing(
+    isSubscribed ? "proPdfUploader" : "freePdfUploader"
+  );
 
   const startProgressBar = () => {
     const interval = setInterval(() => {
@@ -92,7 +91,9 @@ const DropZoneArea = () => {
                   </span>
                   or drag and drop
                 </h1>
-                <p className="text-xs text-muted-foreground">PDF (upto 4MB)</p>
+                <p className="text-xs text-muted-foreground">
+                  PDF (upto {isSubscribed ? "16MB" : "4MB"})
+                </p>
               </div>
               {acceptedFiles && acceptedFiles[0] ? (
                 <div>

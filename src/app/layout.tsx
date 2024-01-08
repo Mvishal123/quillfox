@@ -1,20 +1,17 @@
+import Navbar from "@/components/Navbar";
+import { TRPCProvider } from "@/components/trpcProvider";
+import { Toaster } from "@/components/ui/toaster";
+import { cn, generateMetaData } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { TRPCProvider } from "@/components/trpcProvider";
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import Navbar from "@/components/Navbar";
-import { Toaster } from "@/components/ui/toaster";
 
-import "react-loading-skeleton/dist/skeleton.css"
-import 'simplebar-react/dist/simplebar.min.css';
+import "react-loading-skeleton/dist/skeleton.css";
+import "simplebar-react/dist/simplebar.min.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Quillfox",
-  description: "Making Your Documents Smarter, Your Work Easier.",
-};
+export const metadata: Metadata = {...generateMetaData(), icons: "/favicons.ico"};
 
 export default function RootLayout({
   children,

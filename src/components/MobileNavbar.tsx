@@ -23,6 +23,7 @@ const MobileNavbar = ({ isAuthorized }: { isAuthorized: boolean }) => {
       toggleOpen();
     }
   }, [pathname]);
+  
   return (
     <div className="md:hidden">
       <Menu onClick={() => toggleOpen()} className="relative h-5 w-5 z-50" />

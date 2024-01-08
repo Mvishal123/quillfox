@@ -36,7 +36,7 @@ const Dashboard = ({ isSubscribed }: { isSubscribed: boolean }) => {
       <div>
         <div className="flex justify-between items-center border-b mb-12 pb-4">
           <h1 className="text-3xl font-semibold">My Files</h1>
-          <UploadButton />
+          <UploadButton isSubscribed={isSubscribed}/>
         </div>
       </div>
       <div className="w-full">

@@ -12,7 +12,7 @@ const UploadButton = ({ isSubscribed }: { isSubscribed: boolean }) => {
           <Button>Upload File</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[460px] pt-10 px-6">
-          <DropZoneArea />
+          <DropZoneArea isSubscribed={isSubscribed} />
         </DialogContent>
       </Dialog>
     </div>

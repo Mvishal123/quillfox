@@ -64,7 +64,7 @@ const MobileNavbar = ({ isAuthorized }: { isAuthorized: boolean }) => {
                 </li>
                 <li className="bg-slate-300 shadow-sm" />
                 <li className="border-b px-4 pt-3 pb-2 w-full flex gap-2 justify-center items-center">
-                  <Link href={"/sign-out"} className="flex font-bold">
+                  <Link href="sign-out" className="flex font-bold">
                     Signout
                   </Link>
                 </li>

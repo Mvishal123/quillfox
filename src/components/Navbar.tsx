@@ -27,7 +27,7 @@ const Navbar = async () => {
             Quill<span className="text-primary">Fox</span>.
           </Link>
 
-          <MobileNavbar isAuthorized={!!user}/>
+          <MobileNavbar isAuthorized={!!user} />
 
           <div className="hidden md:inline-block">
             {!user ? (
@@ -43,16 +43,18 @@ const Navbar = async () => {
                   Pricing
                 </Link>
 
-                <LoginLink
+                <Link
+                href="sign-in"
                   className={buttonVariants({
                     variant: "ghost",
                     size: "sm",
                   })}
                 >
                   Signin
-                </LoginLink>
+                </Link>
 
-                <RegisterLink
+                <Link
+                href="sign-up"
                   className={buttonVariants({
                     variant: "dark",
                     size: "sm",
@@ -61,7 +63,7 @@ const Navbar = async () => {
                 >
                   Get started
                   <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-[2px] transition-all" />
-                </RegisterLink>
+                </Link>
               </div>
             ) : (
               // user signed in

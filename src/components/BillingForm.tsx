@@ -57,7 +57,7 @@ const BillingForm = ({ isUserSubscribed }: BillingFormProps) => {
             <CardFooter className={"flex flex-col items-start pl-0 pt-4"}>
               <Button
                 type="submit"
-                variant={"ghost"}
+                variant={"secondary"}
                 className={cn({
                   "bg-primary text-white hover:bg-primary/75 hover:text-white":
                     !isUserSubscribed.isSubscribed,
@@ -68,14 +68,16 @@ const BillingForm = ({ isUserSubscribed }: BillingFormProps) => {
                   : "Upgrade to pro"}
               </Button>
               {isUserSubscribed.isSubscribed ? (
-                <p>
+                <p className="text-sm mt-2 text-slate-500">
                   {isUserSubscribed.isCanceled
                     ? "you subscription will be cancelled on"
-                    : "your subscription will be renewed on"}   
-                  {format(
-                    isUserSubscribed.stripeCurrentPeriodEnd!,
-                    "dd.MM.yyyy"
-                  )}
+                    : "your subscription will be renewed on"}{" "}
+                  <strong>
+                    {format(
+                      isUserSubscribed.stripeCurrentPeriodEnd!,
+                      "dd.MM.yyyy"
+                    )}
+                  </strong>
                 </p>
               ) : null}
             </CardFooter>

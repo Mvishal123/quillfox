@@ -5,11 +5,12 @@ import React from "react";
 import { Button, buttonVariants } from "./ui/button";
 import { ArrowRight } from "lucide-react";
 import { trpc } from "@/app/_trpc/trpc-client";
+import { absoluteUrl } from "@/lib/utils";
 
 const PlanUpgradeButton = ({ user }: { user: KindeUser | null }) => {
   const { mutate: createStripeSession } = trpc.createStripeSession.useMutation({
     onSuccess: ({ url }) => {
-      window.location.href = url ?? "/dashboard/billing";
+      window.location.href = absoluteUrl("/dashboard/pricing");
     },
 
     onError: (error) => {

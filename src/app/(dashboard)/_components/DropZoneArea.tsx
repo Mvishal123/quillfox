@@ -19,7 +19,8 @@ const DropZoneArea = ({ isSubscribed }: { isSubscribed: boolean }) => {
     retryDelay: 500, //this is to retry indefinitely
   });
   const { startUpload } = useUploadThing(
-    isSubscribed ? "proPdfUploader" : "freePdfUploader"
+    // isSubscribed ? "proPdfUploader" : "freePdfUploader"
+    "proPdfUploader"
   );
 
   const startProgressBar = () => {

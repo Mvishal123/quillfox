@@ -1,23 +1,17 @@
 ## What is quillfox?
 Quillfox allows you to have conversations with any PDF's. Simply upload and start asking your questions. She is brilliant and cunningly intelligent as a fox.
 
-`Live link:` <a href="https://quillfox.vercel.app/" target="_blank">https://quillfox.vercel.app/</a>
+`Live link:` [https://quillfox.vercel.app/](https://quillfox.vercel.app/){:target="_blank"}
 
 <font size="1">Please note that if fox (chat) is not giving any response, it means I am out of openai credits. :( </font>
 
 In that case here are few previews of what it actually looks like:
 
-<div>
-    <img src="/landing.png" alt="landing page">
-    </br>
-    <img src="/uploading.png" alt="landing page">
-    </br>
-    <img src="/PDFs.png" alt="landing page">
-    </br>
-    <img src="/quillfox.png" alt="landing page">
-    </br>
-    <img src="/pricing.png" alt="landing page">
-</div>
+![landing page](/landing.png)
+![uploading page](/uploading.png)
+![PDFs page](/PDFs.png)
+![quillfox page](/quillfox.png)
+![pricing page](/pricing.png)
 
 
 

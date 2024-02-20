@@ -109,6 +109,8 @@ const onUploadComplete = async ({
       },
     });
 
+    // console.log("File status updated");
+
     return {
       url: file.url,
     };

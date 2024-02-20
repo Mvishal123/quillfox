@@ -51,9 +51,9 @@ const page = () => {
           <div className="ring-slate-400/50 ring-inset p-3 rounded-lg bg-slate-800/10 max-w-4xl">
             <div>
               <Image
-                src="/dashboard-preview.jpg"
-                height={866}
-                width={1364}
+                src="/quillfox.png"
+                height={781}
+                width={1841}
                 quality={100}
                 alt="Dashboard Preview"
                 className="rounded-lg shadow-md ring ring-slate-300/25"

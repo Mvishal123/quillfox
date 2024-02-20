@@ -78,7 +78,7 @@ const onUploadComplete = async ({
     ) {
       await db.file.update({
         where: {
-          id: fileData.key,
+          id: fileData.id,
         },
         data: {
           uploadStatus: "FAILED",
@@ -108,8 +108,6 @@ const onUploadComplete = async ({
         id: fileData.id,
       },
     });
-
-    // console.log("File status updated");
 
     return {
       url: file.url,

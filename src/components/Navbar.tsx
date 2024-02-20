@@ -42,7 +42,7 @@ const Navbar = async () => {
                 </Link>
 
                 <Link
-                  href="sign-in"
+                  href="/sign-in"
                   className={buttonVariants({
                     variant: "ghost",
                     size: "sm",
@@ -52,7 +52,7 @@ const Navbar = async () => {
                 </Link>
 
                 <Link
-                  href="sign-up"
+                  href="/sign-up"
                   className={buttonVariants({
                     variant: "dark",
                     size: "sm",

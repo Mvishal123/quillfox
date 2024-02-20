@@ -12,8 +12,10 @@ import { buttonVariants } from "./ui/button";
 const Navbar = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-
   const isSubscribed = await getUserSubscriptionPlan();
+
+  console.log({user});
+  
 
   return (
     <nav className="sticky top-0 z-30 inset-x-0 w-full bg-white/75 h-14 border-b border-b-slate-200 backdrop-blur-lg transition-all">

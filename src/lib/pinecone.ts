@@ -1,10 +1,7 @@
-import { Pinecone } from "@pinecone-database/pinecone";
+import { Pinecone } from '@pinecone-database/pinecone';  
 
 export const getPineconeClient = async () => {
-  const pinecone = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY!,
-    environment: "gcp-starter",
-  });
+  const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 
   return pinecone;
 };

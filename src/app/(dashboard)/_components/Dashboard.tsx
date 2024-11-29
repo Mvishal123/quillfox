@@ -3,18 +3,11 @@
 import { trpc } from "@/app/_trpc/trpc-client";
 import { format } from "date-fns";
 
-import UploadButton from "./UploadButton";
-import {
-  Ghost,
-  Loader2,
-  MessageSquare,
-  MessagesSquareIcon,
-  PlusIcon,
-  Trash,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { Ghost, Loader2, MessageSquare, PlusIcon, Trash } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import UploadButton from "./UploadButton";
 
 const Dashboard = ({ isSubscribed }: { isSubscribed: boolean }) => {
   // to show the loader only on the file being deleted
@@ -36,7 +29,7 @@ const Dashboard = ({ isSubscribed }: { isSubscribed: boolean }) => {
       <div>
         <div className="flex justify-between items-center border-b mb-12 pb-4">
           <h1 className="text-3xl font-semibold">My Files</h1>
-          <UploadButton isSubscribed={isSubscribed}/>
+          <UploadButton isSubscribed={isSubscribed} />
         </div>
       </div>
       <div className="w-full">

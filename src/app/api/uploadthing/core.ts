@@ -3,11 +3,10 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 import { getPineconeClient } from "@/lib/pinecone";
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { getUserSubscriptionPlan } from "@/lib/stripe";
-import { PLANS } from "@/config/stripe";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import { PineconeStore } from "@langchain/pinecone";
 
 const f = createUploadthing();
 
@@ -56,49 +55,70 @@ const onUploadComplete = async ({
     },
   });
 
+  console.log("FILE DATA:", fileData);
+
   try {
     const response = await fetch(fileData.url); //getting the file to work with (PDF)
+    console.log("RESPONSE:", response);
 
     const blob = await response.blob(); //Binary Large Object
     const loader = new PDFLoader(blob);
     const docs = await loader.load();
 
-    const pagesPerPdf = docs.length;
+    // const pagesPerPdf = docs.length;
 
-    const isSubscribed = metadata.isSubscribed;
+    // const isSubscribed = metadata.isSubscribed;
 
-    const isProPageExceeeded =
-      pagesPerPdf > PLANS.find((plan) => plan.name === "Pro")!.pagesPerPdf;
-    const isFreePageExceeded =
-      pagesPerPdf > PLANS.find((plan) => plan.name === "Free")!.pagesPerPdf;
+    // const isProPageExceeeded =
+    //   pagesPerPdf > PLANS.find((plan) => plan.name === "Pro")!.pagesPerPdf;
+    // const isFreePageExceeded =
+    //   pagesPerPdf > PLANS.find((plan) => plan.name === "Free")!.pagesPerPdf;
 
-    if (
-      (isSubscribed && isProPageExceeeded) ||
-      (!isSubscribed && isFreePageExceeded)
-    ) {
-      await db.file.update({
-        where: {
-          id: fileData.id,
-        },
-        data: {
-          uploadStatus: "FAILED",
-        },
-      });
-    }
+    // if (
+    //   (isSubscribed && isProPageExceeeded) ||
+    //   (!isSubscribed && isFreePageExceeded)
+    // ) {
+    // await db.file.update({
+    //   where: {
+    //     id: fileData.id,
+    //   },
+    //   data: {
+    //     uploadStatus: "FAILED",
+    //   },
+    // });
+    // }
 
     const pinecone = await getPineconeClient();
     const pineconeIndex = pinecone.index("quillfox");
 
     // ---VECTORIZE THE DOCS---
 
-    const embeddings = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY!,
-    }); //Embedding model from openai
+    const embeddings = new GoogleGenerativeAIEmbeddings({
+      model: "text-embedding-004",
+      apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY!,
+    }) as unknown as any;
 
-    await PineconeStore.fromDocuments(docs, embeddings, {
+    console.log("EMBEDDINGS GOOGLE API:", embeddings);
+
+    // const embedResults = await embeddings.embedQuery(
+    //   docs.map((content) => content).join(" ")
+    // );
+
+    // console.log("EMBEDDINGS:", embedResults);
+
+    // await pineconeIndex.namespace(fileData.id).upsert([
+    //   {
+    //     id: fileData.id,
+    //     values: embedResults,
+    //   },
+    // ]);
+
+    await  PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex,
       namespace: fileData.id,
-    }); //Store in the vector db
+    });
+
+    console.log("EMBEDDINGS STORED IN PINECONE");
 
     await db.file.update({
       data: {
@@ -109,7 +129,7 @@ const onUploadComplete = async ({
       },
     });
 
-    // console.log("File status updated");
+    console.log("FILE STATUS UPDATED");
 
     return {
       url: file.url,

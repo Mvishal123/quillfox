@@ -3,11 +3,10 @@ import { MessageApiValidator } from "@/lib/validators/messageValidator";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { gemini } from "@/lib/gemini";
 import { getPineconeClient } from "@/lib/pinecone";
-import { PineconeStore } from "langchain/vectorstores/pinecone";
-import { openai } from "@/lib/openai";
-import { OpenAIStream, StreamingTextResponse } from "ai";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { PineconeStore } from "@langchain/pinecone";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -20,31 +19,23 @@ export async function POST(req: NextRequest) {
       { status: 401 }
     );
 
-  MessageApiValidator.parse(body); //backend zod input validation. If !success throws error. No need to handle seperately
-
+  MessageApiValidator.parse(body);
   const { fileId, message } = body;
 
-  await db.message.create({
-    data: {
-      fileId,
-      message,
-      isUserMessage: true,
-      userId: user.id,
-    },
-  }); //create user msg in the db
-
-  // Vectorize the incoming message
-  const embeddings = new OpenAIEmbeddings({
-    openAIApiKey: process.env.OPENAI_API_KEY!,
+  const embeddingsNew = new GoogleGenerativeAIEmbeddings({
+    model: "text-embedding-004",
+    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY!,
   });
 
   const pinecone = await getPineconeClient(); //client for vector database
   const pineconeIndex = pinecone.Index("quillfox"); //index to connect to our database
 
-  const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+  const vectorStore = await PineconeStore.fromExistingIndex(embeddingsNew, {
     pineconeIndex,
     namespace: fileId,
   });
+
+  console.log("MESSAGE:", message);
 
   const results = await vectorStore.similaritySearch(message, 4);
 
@@ -59,58 +50,55 @@ export async function POST(req: NextRequest) {
     take: 8,
   });
 
-  //format the message in the format accepted by openai api
-  const formattedMessages = prevMessges.map((msg) => ({
-    role: msg.isUserMessage ? ("user" as const) : ("assistant" as const),
-    content: msg.message,
+  const historyMessages = prevMessges.map((msg) => ({
+    role: msg.isUserMessage ? ("user" as const) : ("model" as const),
+    parts: [{ text: msg.message }],
   }));
 
-  //prompting chatgpt
-  const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    temperature: 0,
-    stream: true,
+  const prompt = `
+  \n-----------------\n
+   ROLE:
+  - You are Quillfox an helpful study buddy on whom students rely on. You help students to study from docs easier. Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format.
+   - Use the history to know the context of the previous conversation. If not needed, ignore it. 
+   - IMPORTANT: Stick only to the PDF content to answer the question no deviations.
+   - The user and model messages are given in HISTORY sectiona and the context of the PDF is given in the CONTEXT section.
+   - The current user message is given in USER INPUT section.
+   - return answers in markdown format.
+   \n----------------\n
+   HISTORY:
+   ${historyMessages.map((message) => {
+     if (message.role === "user") return `User: ${message.parts[0].text}\n`;
+     return `Assistant: ${message.parts[0].text}\n`;
+   })}
+   \n----------------\n
+   CONTEXT:
+   ${results.map((r) => r.pageContent).join("\n\n")}
+   \n----------------\n
+   USER INPUT: ${message}
+  `;
 
-    messages: [
-      {
-        role: "system",
-        content:
-          "Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format.",
-      },
-      {
-        role: "user",
-        content: `Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format. \nIf you don't know the answer, just say that you don't know, don't try to make up an answer. If the question is not related to the PDF content, don't answer.
-          
-    \n----------------\n
-    
-    PREVIOUS CONVERSATION:
-    ${formattedMessages.map((message) => {
-      if (message.role === "user") return `User: ${message.content}\n`;
-      return `Assistant: ${message.content}\n`;
-    })}
-    
-    \n----------------\n
-    
-    CONTEXT:
-    ${results.map((r) => r.pageContent).join("\n\n")}
-    
-    USER INPUT: ${message}`,
-      },
-    ],
-  });
+  const result = await gemini.generateContent(prompt);
+  const aiMessage = result.response.text();
 
-  //api to stream the message as in chatgpt.
-  const stream = OpenAIStream(response, {
-    async onCompletion(completion) {
-      await db.message.create({
-        data: {
-          message: completion,
-          isUserMessage: false,
-          fileId,
-          userId: user.id,  
-        },
-      });
+  await db.message.create({
+    data: {
+      fileId,
+      message,
+      isUserMessage: true,
+      userId: user.id,
     },
   });
-  return new StreamingTextResponse(stream);
+
+  await db.message.create({
+    data: {
+      fileId,
+      message: aiMessage,
+      isUserMessage: false,
+      userId: user.id,
+    },
+  });
+
+  return NextResponse.json({
+    message: aiMessage,
+  });
 }

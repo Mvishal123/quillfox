@@ -101,84 +101,41 @@ export const ChatContextProvider = ({
       );
     },
 
-    onSuccess: async (stream) => {
+    onSuccess: async (response) => {
       setIsLoading(false);
 
-      //-----------IMPLEMENT STREAMING LATER-----------------
-      if (!stream) {
-        return toast({
-          title: "There's something wrong in our server",
-          description: "Please try again later. No streaming",
-          variant: "destructive",
-        });
-      }
+      // Update the UI with the AI response
+      utils.getFileMessages.setInfiniteData(
+        { fileId, limit: INFINITE_QUERY_LIMIT },
+        (oldPages) => {
+          if (!oldPages) {
+            return {
+              pages: [],
+              pageParams: [],
+            };
+          }
 
-      const reader = stream.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-
-      let accumulatedRes = "";
-
-      while (!done) {
-        const { done: doneReading, value } = await reader.read();
-        done = doneReading;
-        const chunkValue = decoder.decode(value);
-
-        accumulatedRes += chunkValue;
-
-        utils.getFileMessages.setInfiniteData(
-          { fileId, limit: INFINITE_QUERY_LIMIT },
-          (oldPages) => {
-            if (!oldPages) {
+          let updatedPages = oldPages.pages.map((page, index) => {
+            if (index === 0) {
               return {
-                pages: [],
-                pageParams: [],
+                ...page,
+                messages: [
+                  {
+                    id: crypto.randomUUID(),
+                    createdAt: new Date().toISOString(),
+                    message: response.message,
+                    isUserMessage: false,
+                  },
+                  ...page.messages,
+                ],
               };
             }
+            return page;
+          });
 
-            let isAIResponseCreated = oldPages.pages.some((page) =>
-              page.messages.some((msg) => msg.id === "ai-response")
-            ); // to check if there is already a message streaming.
-
-            let updatedPages = oldPages.pages.map((page) => {
-              if (page === oldPages.pages[0]) {
-                let updatedMessage;
-                if (!isAIResponseCreated) {
-                  updatedMessage = [
-                    {
-                      id: "ai-response",
-                      createdAt: new Date().toISOString(),
-                      message: accumulatedRes,
-                      isUserMessage: false,
-                    },
-                    ...page.messages,
-                  ];
-                } else {
-                  updatedMessage = page.messages.map((msg) => {
-                    if (msg.id === "ai-response") {
-                      return {
-                        ...msg,
-                        message: accumulatedRes,
-                      };
-                    }
-
-                    return msg;
-                  });
-                }
-
-                return {
-                  ...page,
-                  messages: updatedMessage,
-                };
-              }
-
-              return page;
-            });
-
-            return { ...oldPages, pages: updatedPages };
-          }
-        );
-      }
+          return { ...oldPages, pages: updatedPages };
+        }
+      );
     },
 
     onSettled: async () => {
